@@ -1,0 +1,20 @@
+
+<html>
+    <head>
+    <title>on/off</title>
+</head>
+<body>
+    <h1>bulb on/off</h1>
+    <h2 id="status">off</h2>
+    <button onclick="TurnOn()">on</button>
+    <button onclick="TurnOff()">off</button>
+</body>
+<script>
+    function TurnOn(){
+        document.getElementById("status").innerText="on";
+    }
+    function TurnOff(){
+        document.getElementById("status").innerText="off";
+    }
+  </script>
+</html>

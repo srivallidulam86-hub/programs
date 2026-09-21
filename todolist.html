@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>To-Do List</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            padding: 30px;
+        }
+
+        input, select, button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        li {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid gray;
+            width: 500px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+        }
+
+        .high {
+            color: red;
+        }
+
+        .medium {
+            color: orange;
+        }
+
+        .low {
+            color: green;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <h1>📝 To-Do List</h1>
+
+
+    <!-- Task Input -->
+
+    <input
+        type="text"
+        id="taskInput"
+        placeholder="Enter task"
+    >
+
+
+    <!-- Date -->
+
+    <input
+        type="date"
+        id="taskDate"
+    >
+
+
+    <!-- Priority -->
+
+    <select id="priority">
+
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+
+    </select>
+
+
+    <button id="addBtn">
+        Add Task
+    </button>
+
+
+    <button id="clearBtn">
+        Clear All
+    </button>
+
+
+    <br><br>
+
+
+    <!-- Search -->
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search task"
+    >
+
+
+    <!-- Filter -->
+
+    <select id="filter">
+
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+
+    </select>
+
+
+    <!-- Counter -->
+
+    <h3 id="counter">
+        Total: 0 | Completed: 0 | Pending: 0
+    </h3>
+
+
+    <!-- Task List -->
+
+    <ol id="taskList"></ol>
+
+
+    <script>
+
+        let taskInput = document.getElementById("taskInput");
+
+        let taskDate = document.getElementById("taskDate");
+
+        let priority = document.getElementById("priority");
+
+        let addBtn = document.getElementById("addBtn");
+
+        let clearBtn = document.getElementById("clearBtn");
+
+        let searchInput = document.getElementById("searchInput");
+
+        let filter = document.getElementById("filter");
+
+        let taskList = document.getElementById("taskList");
+
+        let counter = document.getElementById("counter");
+
+
+        // Store tasks
+
+        let tasks = [];
+
+        let editIndex = -1;
+
+
+        // =========================
+        // ADD / UPDATE TASK
+        // =========================
+
+        addBtn.addEventListener("click", function () {
+
+            let task = taskInput.value.trim();
+
+            if (task === "") {
+
+                alert("Please enter a task!");
+
+                return;
+            }
+
+
+            // UPDATE TASK
+
+            if (editIndex !== -1) {
+
+                tasks[editIndex].name = task;
+
+                tasks[editIndex].date = taskDate.value;
+
+                tasks[editIndex].priority = priority.value;
+
+                editIndex = -1;
+
+                addBtn.textContent = "Add Task";
+
+            }
+
+            // ADD NEW TASK
+
+            else {
+
+                let newTask = {
+
+                    name: task,
+
+                    date: taskDate.value,
+
+                    priority: priority.value,
+
+                    completed: false
+
+                };
+
+                tasks.push(newTask);
+
+            }
+
+
+            taskInput.value = "";
+
+            taskDate.value = "";
+
+            displayTasks();
+
+        });
+
+
+        // =========================
+        // DISPLAY TASKS
+        // =========================
+
+        function displayTasks() {
+
+            taskList.innerHTML = "";
+
+
+            let searchText =
+                searchInput.value.toLowerCase();
+
+
+            let selectedFilter =
+                filter.value;
+
+
+            let displayNumber = 1;
+
+
+            tasks.forEach(function (task, index) {
+
+
+                // SEARCH
+
+                if (
+                    !task.name
+                        .toLowerCase()
+                        .includes(searchText)
+                ) {
+
+                    return;
+
+                }
+
+
+                // FILTER
+
+                if (
+                    selectedFilter === "pending"
+                    && task.completed === true
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    selectedFilter === "completed"
+                    && task.completed === false
+                ) {
+
+                    return;
+
+                }
+
+
+                // Create li
+
+                let li = document.createElement("li");
+
+
+                // Task name
+
+                let span = document.createElement("span");
+
+                span.textContent =
+                    task.name + " ";
+
+
+                // Completed style
+
+                if (task.completed) {
+
+                    span.classList.add("completed");
+
+                }
+
+
+                // Priority
+
+                let priorityText =
+                    document.createElement("span");
+
+                priorityText.textContent =
+                    " [" + task.priority + "] ";
+
+
+                priorityText.classList.add(
+                    task.priority.toLowerCase()
+                );
+
+
+                // Date
+
+                let dateText =
+                    document.createElement("span");
+
+                if (task.date !== "") {
+
+                    dateText.textContent =
+                        " 📅 " + task.date;
+
+                }
+
+
+                // Complete button
+
+                let completeBtn =
+                    document.createElement("button");
+
+                completeBtn.textContent =
+                    "Complete";
+
+
+                completeBtn.addEventListener(
+                    "click",
+                    function () {
+
+                        task.completed =
+                            !task.completed;
+
+                        displayTasks();
+
+                    }
+                );
+
+
+                // Edit button
+
+                let editBtn =
+                    document.createElement("button");
+
+                editBtn.textContent =
+                    "Edit";
+
+
+                editBtn.addEventListener(
+                    "click",
+                    function () {
+
+                        taskInput.value =
+                            task.name;
+
+                        taskDate.value =
+                            task.date;
+
+                        priority.value =
+                            task.priority;
+
+                        editIndex = index;
+
+                        addBtn.textContent =
+                            "Update Task";
+
+                    }
+                );
+
+
+                // Delete button
+
+                let deleteBtn =
+                    document.createElement("button");
+
+                deleteBtn.textContent =
+                    "Delete";
+
+
+                deleteBtn.addEventListener(
+                    "click",
+                    function () {
+
+                        tasks.splice(index, 1);
+
+                        displayTasks();
+
+                    }
+                );
+
+
+                // Add everything
+
+                li.appendChild(span);
+
+                li.appendChild(priorityText);
+
+                li.appendChild(dateText);
+
+                li.appendChild(completeBtn);
+
+                li.appendChild(editBtn);
+
+                li.appendChild(deleteBtn);
+
+
+                taskList.appendChild(li);
+
+
+                displayNumber++;
+
+            });
+
+
+            updateCounter();
+
+        }
+
+
+        // =========================
+        // COUNTER
+        // =========================
+
+        function updateCounter() {
+
+            let total =
+                tasks.length;
+
+
+            let completed =
+                tasks.filter(function (task) {
+
+                    return task.completed === true;
+
+                }).length;
+
+
+            let pending =
+                total - completed;
+
+
+            counter.textContent =
+                "Total: " + total +
+                " | Completed: " + completed +
+                " | Pending: " + pending;
+
+        }
+
+
+        // =========================
+        // CLEAR ALL
+        // =========================
+
+        clearBtn.addEventListener(
+            "click",
+            function () {
+
+                tasks = [];
+
+                displayTasks();
+
+            }
+        );
+
+
+        // =========================
+        // SEARCH
+        // =========================
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                displayTasks();
+
+            }
+        );
+
+
+        // =========================
+        // FILTER
+        // =========================
+
+        filter.addEventListener(
+            "change",
+            function () {
+
+                displayTasks();
+
+            }
+        );
+
+
+        // =========================
+        // ENTER KEY
+        // =========================
+
+        taskInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    addBtn.click();
+
+                }
+
+            }
+        );
+
+
+    </script>
+
+</body>
+
+</html>
